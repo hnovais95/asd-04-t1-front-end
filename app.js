@@ -15,4 +15,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', apiRouter);
 
-module.exports = app;
+app.post('/login', (req, res) => {
+    res.redirect('/produtos')
+});
+
+app.get('/produtos', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'produtos.html'));
+});
+
+app.listen(3000, () => {
+    console.log(`Servidor rodando em http://localhost:3000`);
+});

@@ -1,14 +1,24 @@
+<!DOCTYPE html>
 <html>
-
 <head>
-  <title>API Produtos</title>
-  <link rel="stylesheet" href="/stylesheets/style.css">
+    <title>API Rest</title>
+    <link rel="stylesheet" href="/stylesheets/index.css">
 </head>
-
 <body>
-  <h1>Olá!</h1>
-  <p>Essa é a minha primeira API Rest com Node.js.</p>
-  <p>O código fonte pode ser acessado neste <a href="https://github.com/hnovais95/node-api">link</a>.</p>
-</body>
 
+<div id="login-title">
+  <h2>Login</h2>
+</div>
+
+<form method="POST" action="/login">
+    <label for="login">Usuário:</label>
+    <input type="text" id="login" name="login" required><br><br>
+
+    <label for="senha">Senha:</label>
+    <input type="password" id="senha" name="senha" required><br><br>
+
+    <input type="submit" value="Entrar">
+</form>
+
+</body>
 </html>

@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-const knex = require('knex')(require('../knexfile').production)
+const knex = require('knex')(require('../knexfile').development)
 
 router.get('/produtos', function(req, res, next) {
     knex('produtos')
@@ -15,7 +15,7 @@ router.get('/produtos', function(req, res, next) {
 });
 
 router.get('/produtos/:id', function(req, res, next) {
-    let id = req.params.id
+    const id = req.params.id
 
     knex('produtos')
     .select('*')
@@ -39,7 +39,7 @@ router.get('/produtos/:id', function(req, res, next) {
 });
 
 router.post('/produtos', function(req, res, next) {
-    let produto = req.body
+    const produto = req.body
     
     knex('produtos')
         .insert(produto)
@@ -54,7 +54,7 @@ router.post('/produtos', function(req, res, next) {
 });
 
 router.delete('/produtos/:id', function(req, res, next) {
-    let id = req.params.id
+    const id = req.params.id
 
     knex('produtos')
         .where({ id: id })
@@ -74,8 +74,8 @@ router.delete('/produtos/:id', function(req, res, next) {
 });
 
 router.put('/produtos/:id', function(req, res, next) {
-    let id = req.params.id
-    let produto = req.body
+    const id = req.params.id
+    const produto = req.body
 
     knex('produtos')
     .where({ id: id })
