@@ -48,7 +48,7 @@ router.post('/produtos', function(req, res, next) {
             const newId = ids[0]
             res.status(201).json({
                 message: `Produto inserido com sucesso`,
-                data: { id: newId }
+                data: newId
             })
         })
 });

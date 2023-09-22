@@ -3,6 +3,7 @@
 <head>
     <title>Gestão de Produtos</title>
     <link rel="stylesheet" href="stylesheets/produtos.css">
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 <body>
     <h1>Gestão de Produtos</h1>
@@ -23,10 +24,11 @@
 
     <div id="secaoFormulario">
         <h2 id="tituloFormulario">Adicionar Produto</h2>
-        <form id="formulario" method="POST" action="/api/produtos">
+        <form id="formulario">
             <div id="id">
                 <label for="caixaDeSelecao">ID:</label>
                 <select id="caixaDeSelecao">
+                    <option value="">Escolha uma opção</option>
                     <!-- As opções serão inseridas aqui dinamicamente -->
                 </select>
             </div>
