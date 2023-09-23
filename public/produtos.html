@@ -1,76 +1,98 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <title>Gestão de Produtos</title>
-    <link rel="stylesheet" href="stylesheets/produtos.css">
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-</head>
-<body>
-    <h1>Gestão de Produtos</h1>
+	<head>
+		<title>Gestão de Produtos</title>
+		<link rel="stylesheet" href="stylesheets/produtos.css" />
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	</head>
+	<body>
+		<span id="login-label"></span>
+		<button onclick="logout()" class="logout-button">Logout</button>
+		<h1>Gestão de Produtos</h1>
 
-    <div id="secaoOpcoes">
-        <form id="opcoes" class="radio-options">
-            <label>
-              <input type="radio" name="opcao" value="adicionar" checked> Adicionar
-            </label>
-            <label>
-              <input type="radio" name="opcao" value="editar"> Editar
-            </label>
-            <label>
-              <input type="radio" name="opcao" value="deletar"> Deletar
-            </label>
-          </form>
-    </div>
+		<div id="secaoOpcoes">
+			<form id="opcoes" class="radio-options">
+				<label>
+					<input type="radio" name="opcao" value="adicionar" checked />
+					Adicionar
+				</label>
+				<label>
+					<input type="radio" name="opcao" value="editar" /> Editar
+				</label>
+				<label>
+					<input type="radio" name="opcao" value="deletar" /> Deletar
+				</label>
+			</form>
+		</div>
 
-    <div id="secaoFormulario">
-        <h2 id="tituloFormulario">Adicionar Produto</h2>
-        <form id="formulario">
-            <div id="id">
-                <label for="caixaDeSelecao">ID:</label>
-                <select id="caixaDeSelecao">
-                    <option value="">Escolha uma opção</option>
-                    <!-- As opções serão inseridas aqui dinamicamente -->
-                </select>
-            </div>
+		<div id="secaoFormulario">
+			<h2 id="tituloFormulario">Adicionar Produto</h2>
+			<form id="formulario">
+				<div id="id">
+					<label for="caixaDeSelecao">ID:</label>
+					<select id="caixaDeSelecao">
+						<option value="">Escolha uma opção</option>
+						<!-- As opções serão inseridas aqui dinamicamente -->
+					</select>
+				</div>
 
-            <div id="descricao">
-                <label for="campoDescricao">Descrição:</label>
-                <input type="text" id="campoDescricao" name="descricao" required><br><br>
-            </div>
-        
-            <div id="marca">
-                <label for="campoMarca">Marca:</label>
-                <input type="text" id="campoMarca" name="marca" required><br><br>
-            </div>
-        
-            <div id="valor">
-                <label for="campoValor">Valor:</label>
-                <input type="text" id="campoValor" name="valor" step="0.01" required placeholder="R$ 0,00" required><br><br>
-            </div>
-    
-            <input type="submit" id="botaoFormulario" value="Cadastrar">
-        </form>
-    </div>
+				<div id="descricao">
+					<label for="campoDescricao">Descrição:</label>
+					<input
+						type="text"
+						id="campoDescricao"
+						name="descricao"
+						required
+					/><br /><br />
+				</div>
 
-    <input type="submit" id="botaoListarProdutos" value="Listar Produtos">
+				<div id="marca">
+					<label for="campoMarca">Marca:</label>
+					<input
+						type="text"
+						id="campoMarca"
+						name="marca"
+						required
+					/><br /><br />
+				</div>
 
-    <div id="secaoListaProdutos">
-        <h2>Produtos</h2>
-        <table id="tabelaProdutos">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Descrição</th>
-                    <th>Marca</th>
-                    <th>Valor</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Linhas da tabela serão adicionadas dinamicamente aqui -->
-            </tbody>
-        </table>
-    </div>
+				<div id="valor">
+					<label for="campoValor">Valor:</label>
+					<input
+						type="text"
+						id="campoValor"
+						name="valor"
+						step="0.01"
+						required
+						placeholder="R$ 0,00"
+						required
+					/><br /><br />
+				</div>
 
-    <script type="text/javascript" src="javascripts/produtos.js"></script>
-</body>
+				<input type="submit" id="botaoFormulario" value="Cadastrar" />
+			</form>
+		</div>
+
+		<input type="submit" id="botaoListarProdutos" value="Listar Produtos" />
+
+		<div id="secaoListaProdutos">
+			<h2>Produtos</h2>
+			<table id="tabelaProdutos">
+				<thead>
+					<tr>
+						<th>ID</th>
+						<th>Descrição</th>
+						<th>Marca</th>
+						<th>Valor</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- Linhas da tabela serão adicionadas dinamicamente aqui -->
+				</tbody>
+			</table>
+		</div>
+
+		<script type="text/javascript" src="javascripts/produtos.js"></script>
+		<script type="text/javascript" src="javascripts/utils.js"></script>
+	</body>
 </html>

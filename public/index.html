@@ -1,24 +1,41 @@
 <!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-    <link rel="stylesheet" href="/stylesheets/index.css">
-</head>
-<body>
+<html lang="pt-BR">
+	<head>
+		<title>Login</title>
+		<link rel="stylesheet" href="./stylesheets/index.css" />
+		<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	</head>
+	<body>
+		<div class="home-wrapper" id="home-wrapper">
+			<div class="form-wrapper">
+				<div id="titulo">
+					<h2>Login</h2>
+				</div>
 
-<div id="titulo">
-  <h2>Login</h2>
-</div>
+				<form class="form-login" id="formulario">
+					<label for="login">Usuário:</label>
+					<input
+						type="text"
+						id="login"
+						name="login"
+						required
+						placeholder="Digite seu login"
+					/><br /><br />
 
-<form method="POST" action="/login">
-    <label for="login">Usuário:</label>
-    <input type="text" id="login" name="login" required><br><br>
+					<label for="senha">Senha:</label>
+					<input
+						type="password"
+						id="senha"
+						name="senha"
+						required
+						placeholder="Digite sua senha"
+					/><br /><br />
 
-    <label for="senha">Senha:</label>
-    <input type="password" id="senha" name="senha" required><br><br>
-
-    <input type="submit" value="Entrar">
-</form>
-
-</body>
+					<input type="submit" value="Entrar" class="submit-button" />
+				</form>
+			</div>
+		</div>
+		<script type="text/javascript" src="javascripts/index.js"></script>
+		<script type="text/javascript" src="javascripts/utils.js"></script>
+	</body>
 </html>
