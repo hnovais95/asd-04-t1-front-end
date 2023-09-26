@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 	if (parsedData) {
 		const { token } = parsedData;
 		if (!!token)
-			window.location.href = "/asd-04-t1-front-end/public/produtos.html";
+			window.location.href = "produtos.html";
 	}
 });
 
@@ -43,7 +43,7 @@ function login() {
 		})
 		.then((data) => {
 			localStorage.setItem(LOCALSTORAGE_KEY_LOGIN, JSON.stringify(data));
-			window.location.href = "/asd-04-t1-front-end/public/produtos.html";
+			window.location.href = "produtos.html";
 		})
 		.catch((error) => {
 			console.log(error);

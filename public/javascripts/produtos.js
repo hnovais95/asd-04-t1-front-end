@@ -108,7 +108,7 @@ function definirConfiguracaoInicial() {
 	const localStorageItem = localStorage.getItem(LOCALSTORAGE_KEY_LOGIN);
 	const parsedData = JSON.parse(localStorageItem);
 	const { token, login } = parsedData;
-	if (!token) window.location.href = "/asd-04-t1-front-end/public/index.html";
+	if (!token) window.location.href = "index.html";
 
 	loginLabel.textContent = `Login: ${login}`;
 
@@ -160,7 +160,7 @@ function configurarFormularioParaDelecao() {
 
 function logout() {
 	localStorage.removeItem(LOCALSTORAGE_KEY_LOGIN);
-	window.location.href = "/asd-04-t1-front-end/public/index.html";
+	window.location.href = "index.html";
 }
 
 function preencherFormularioComProdutoSelecionado(id) {
