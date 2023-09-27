@@ -1,215 +1,362 @@
-const tituloFormulario = document.getElementById('tituloFormulario');
-const secaoId = document.getElementById('id');
-const secaoDescricao = document.getElementById('descricao');
-const secaoMarca = document.getElementById('marca');
-const secaoValor = document.getElementById('valor');
-const botaoFormulario = document.getElementById('botaoFormulario');
-const secaoListaProdutos = document.getElementById('secaoListaProdutos')
-const botaoListarProdutos = document.getElementById('botaoListarProdutos');
-const campoId = document.getElementById('campoId')
-const campoDescricao = document.getElementById('campoDescricao')
-const campoMarca = document.getElementById('campoMarca')
-const campoValor = document.getElementById('campoValor')
-const tabela = document.getElementById('tabelaProdutos').getElementsByTagName('tbody')[0];
-const caixaDeSelecao = document.getElementById('caixaDeSelecao');
-const radioButtons = document.getElementsByName('opcao');
+// == Componentes ==
 
-function mostrarProdutos(mostrar) {
-    secaoListaProdutos.style.display = mostrar === true ?  'block' : 'none';
-    botaoListarProdutos.value = mostrar === true ? 'Esconder produtos' : 'Listar produtos';
+const formularioRadioButtons = document.getElementById("opcoes");
+const radioButtons = document.getElementsByName("opcao");
+const tituloFormulario = document.getElementById("tituloFormulario");
+const formulario = document.getElementById("formulario");
+const secaoId = document.getElementById("id");
+const secaoDescricao = document.getElementById("descricao");
+const secaoMarca = document.getElementById("marca");
+const secaoValor = document.getElementById("valor");
+const caixaDeSelecao = document.getElementById("caixaDeSelecao");
+const campoId = document.getElementById("campoId");
+const campoDescricao = document.getElementById("campoDescricao");
+const campoMarca = document.getElementById("campoMarca");
+const campoValor = document.getElementById("campoValor");
+const botaoFormulario = document.getElementById("botaoFormulario");
+const botaoListarProdutos = document.getElementById("botaoListarProdutos");
+const secaoListaProdutos = document.getElementById("secaoListaProdutos");
+const loginLabel = document.getElementById("login-label");
+const tabela = document
+	.getElementById("tabelaProdutos")
+	.getElementsByTagName("tbody")[0];
+
+// == Propriedades ==
+
+var opcaoSelecionada = "adicionar";
+
+// == Listeners ==
+
+document.addEventListener("DOMContentLoaded", definirConfiguracaoInicial);
+
+for (var i = 0; i < radioButtons.length; i++) {
+	radioButtons[i].addEventListener("click", function () {
+		opcaoSelecionada = this.value;
+
+		switch (opcaoSelecionada) {
+			case "adicionar":
+				configurarFormularioParaAdicao();
+				break;
+			case "editar":
+				configurarFormularioParaEdicao();
+				carregarProdutosPara(preencherCaixaDeSelecao);
+				break;
+			case "deletar":
+				configurarFormularioParaDelecao();
+				carregarProdutosPara(preencherCaixaDeSelecao);
+				break;
+		}
+
+		formulario.reset();
+	});
 }
 
-function mascararCampoValor() {
-    const valor = campoValor.value.replace(/\D/g, '');
+caixaDeSelecao.addEventListener("change", function (event) {
+	const indiceSelecionado = caixaDeSelecao.selectedIndex;
+	const id = caixaDeSelecao.options[indiceSelecionado].text;
+	preencherFormularioComProdutoSelecionado(id);
+});
 
-    if (valor.length === 0) {
-        campoValor.value = '';
-        return;
-    }
+campoValor.addEventListener("input", () => {
+	campoValor.value = converterParaBRL(campoValor.value);
+});
 
-    let valorFormatado = parseFloat(valor) / 100;
-    valorFormatado = valorFormatado.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    });
+botaoListarProdutos.addEventListener("click", () => {
+	const mostrarProdutos = secaoListaProdutos.style.display === "none";
 
-    campoValor.value = valorFormatado;
+	if (mostrarProdutos) {
+		carregarProdutosPara(preencherTabela);
+		definirVisibilidaDaListaDeProdutos(true);
+	} else {
+		definirVisibilidaDaListaDeProdutos(false);
+	}
+});
+
+formulario.addEventListener("submit", function (event) {
+	event.preventDefault();
+
+	let opcaoSelecionada = null;
+
+	for (var i = 0; i < radioButtons.length; i++) {
+		if (radioButtons[i].checked) {
+			opcaoSelecionada = radioButtons[i].value;
+			break;
+		}
+	}
+
+	const id =
+		opcaoSelecionada != "adicionar"
+			? caixaDeSelecao.options[caixaDeSelecao.selectedIndex].text
+			: null;
+
+	switch (opcaoSelecionada) {
+		case "adicionar":
+			adicionarProduto();
+			break;
+		case "editar":
+			editarProduto(id);
+			break;
+		case "deletar":
+			deletarProduto(id);
+			break;
+	}
+});
+
+// == Funções ==
+
+function definirConfiguracaoInicial() {
+	const localStorageItem = localStorage.getItem(LOCALSTORAGE_KEY_LOGIN);
+	const parsedData = JSON.parse(localStorageItem);
+	const { token, login } = parsedData;
+	if (!token) window.location.href = "index.html";
+
+	loginLabel.textContent = `Login: ${login}`;
+
+	configurarFormularioParaAdicao();
+	formularioRadioButtons.reset();
+	formulario.reset();
+	definirVisibilidaDaListaDeProdutos(false);
 }
 
-function carregarProdutosPara(executarAcao) {
-    fetch('/api/produtos')
-    .then(response => response.json())
-    .then(produtos => {
-        executarAcao(produtos);
-    })
-    .catch(error => {
-        console.error('Erro ao buscar dados da API', error);
-    });
-}
-
-function preencherTabela(produtos) {
-    limparTabela()
-
-    for (i=0; i < produtos.length; i++) {
-        const newRow = tabela.insertRow();
-
-        const cell1 = newRow.insertCell(0);
-        const cell2 = newRow.insertCell(1);
-        const cell3 = newRow.insertCell(2);
-        const cell4 = newRow.insertCell(3);
-
-        cell1.innerHTML = produtos[i].id;
-        cell2.innerHTML = produtos[i].descricao;
-        cell3.innerHTML = produtos[i].marca;
-        cell4.innerHTML = `R$ ${produtos[i].valor.toFixed(2)}`;
-    }
-}
-
-function limparTabela() {
-    for(let i = tabela.rows.length - 1; i >= 0; i--) {
-        tabela.deleteRow(i);
-    }
-}
-
-function preencherIds(produtos) {
-    limparIds();
-
-    const ids = produtos.map(produto => produto.id);
-
-    for (var i = 0; i < ids.length; i++) {
-        var opcao = document.createElement('option');
-        opcao.text = ids[i];
-        opcao.value = i + 1;
-        caixaDeSelecao.appendChild(opcao);
-    }
-}
-
-function limparIds() {
-    while (caixaDeSelecao.firstChild) {
-        caixaDeSelecao.removeChild(caixaDeSelecao.firstChild);
-    }
-}
-
-function configurarRadioButtons() {
-    for (var i = 0; i < radioButtons.length; i++) {
-        radioButtons[i].addEventListener('click', function() {
-            const opcaoSelecionada = this.value;
-
-            switch (opcaoSelecionada) {
-                case 'adicionar':
-                    configurarFormularioParaCadastro();
-                    break;
-                case 'editar':
-                    configurarFormularioParaEdicao();
-                    carregarProdutosPara(preencherIds);
-                    break;
-                case 'deletar':
-                    configurarFormularioParaDelecao();
-                    carregarProdutosPara(preencherIds);
-                    break;
-            }
-        });
-    }
-}
-
-function configurarFormularioParaCadastro() {
-    tituloFormulario.textContent = 'Adicionar produto'
-    secaoId.style.display = 'none';
-    secaoDescricao.style.display = 'block';
-    secaoMarca.style.display = 'block';
-    secaoValor.style.display = 'block';
-    botaoFormulario.value = 'Adicionar';
+function configurarFormularioParaAdicao() {
+	tituloFormulario.textContent = "Adicionar produto";
+	secaoId.style.display = "none";
+	caixaDeSelecao.value = null;
+	secaoDescricao.style.display = "block";
+	secaoMarca.style.display = "block";
+	secaoValor.style.display = "block";
+	botaoFormulario.value = "Adicionar";
+	caixaDeSelecao.required = false;
+	campoDescricao.required = true;
+	campoMarca.required = true;
+	campoValor.required = true;
 }
 
 function configurarFormularioParaEdicao() {
-    tituloFormulario.textContent = 'Editar produto'
-    secaoId.style.display = 'block';
-    secaoDescricao.style.display = 'block';
-    secaoMarca.style.display = 'block';
-    secaoValor.style.display = 'block';
-    botaoFormulario.value = 'Editar';
+	tituloFormulario.textContent = "Editar produto";
+	secaoId.style.display = "block";
+	secaoDescricao.style.display = "block";
+	secaoMarca.style.display = "block";
+	secaoValor.style.display = "block";
+	botaoFormulario.value = "Editar";
+	caixaDeSelecao.required = true;
+	campoDescricao.required = true;
+	campoMarca.required = true;
+	campoValor.required = true;
 }
 
 function configurarFormularioParaDelecao() {
-    tituloFormulario.textContent = 'Deletar produto';
-    secaoId.style.display = 'block';
-    secaoDescricao.style.display = 'none';
-    secaoMarca.style.display = 'none';
-    secaoValor.style.display = 'none';
-    botaoFormulario.value = 'Deletar';
+	tituloFormulario.textContent = "Deletar produto";
+	secaoId.style.display = "block";
+	secaoDescricao.style.display = "none";
+	secaoMarca.style.display = "none";
+	secaoValor.style.display = "none";
+	botaoFormulario.value = "Deletar";
+	caixaDeSelecao.required = false;
+	campoDescricao.required = false;
+	campoMarca.required = false;
+	campoValor.required = false;
+}
+
+function logout() {
+	localStorage.removeItem(LOCALSTORAGE_KEY_LOGIN);
+	window.location.href = "index.html";
+}
+
+function preencherFormularioComProdutoSelecionado(id) {
+	const localStorageItem = localStorage.getItem(LOCALSTORAGE_KEY_LOGIN);
+	const parsedData = JSON.parse(localStorageItem);
+	const { token } = parsedData;
+	fetch(`${URL_API_LINK}/api/produtos/` + id, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((response) => response.json())
+		.then((produto) => {
+			campoDescricao.value = produto.descricao;
+			campoMarca.value = produto.marca;
+			const valor = Math.round(produto.valor * 100.0);
+			campoValor.value = converterParaBRL(valor);
+		})
+		.catch((error) => {
+			console.error("Erro ao buscar dados da API", error);
+		});
+}
+
+function definirVisibilidaDaListaDeProdutos(mostrar) {
+	secaoListaProdutos.style.display = mostrar === true ? "block" : "none";
+	botaoListarProdutos.value =
+		mostrar === true ? "Esconder produtos" : "Listar produtos";
+}
+
+function converterParaBRL(valor) {
+	const valorString = valor.toString().replace(/\D/g, "");
+
+	if (valorString.length === 0) {
+		return "";
+	}
+
+	let valorFormatado = parseFloat(valorString) / 100;
+
+	valorFormatado = valorFormatado.toLocaleString("pt-BR", {
+		style: "currency",
+		currency: "BRL",
+	});
+
+	return valorFormatado;
+}
+
+function carregarProdutosPara(executarAcao) {
+	const localStorageItem = localStorage.getItem(LOCALSTORAGE_KEY_LOGIN);
+	const parsedData = JSON.parse(localStorageItem);
+	const { token } = parsedData;
+	fetch(`${URL_API_LINK}/api/produtos`, {
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((response) => response.json())
+		.then((produtos) => {
+			executarAcao(produtos);
+		})
+		.catch((error) => {
+			console.error("Erro ao buscar dados da API", error);
+		});
+}
+
+function preencherTabela(produtos) {
+	limparTabela();
+
+	for (i = 0; i < produtos.length; i++) {
+		const newRow = tabela.insertRow();
+
+		const cell1 = newRow.insertCell(0);
+		const cell2 = newRow.insertCell(1);
+		const cell3 = newRow.insertCell(2);
+		const cell4 = newRow.insertCell(3);
+
+		cell1.innerHTML = produtos[i].id;
+		cell2.innerHTML = produtos[i].descricao;
+		cell3.innerHTML = produtos[i].marca;
+		const valor = Math.round(produtos[i].valor * 100);
+		cell4.innerHTML = converterParaBRL(valor);
+	}
+}
+
+function limparTabela() {
+	for (let i = tabela.rows.length - 1; i >= 0; i--) {
+		tabela.deleteRow(i);
+	}
+}
+
+function preencherCaixaDeSelecao(produtos) {
+	while (caixaDeSelecao.children.length > 1) {
+		caixaDeSelecao.removeChild(caixaDeSelecao.lastChild);
+	}
+
+	const ids = produtos.map((produto) => produto.id);
+
+	for (var i = 0; i < ids.length; i++) {
+		const opcao = document.createElement("option");
+		opcao.text = ids[i];
+		opcao.value = i + 1;
+		caixaDeSelecao.appendChild(opcao);
+	}
 }
 
 function adicionarProduto() {
-    const produto = {
-        id: campoId.value,
-        descricao: campoDescricao.value,
-        marca: campoMarca.value,
-        valor: converterParaValorNumerico(campoValor.value)
-    }
-
-    fetch('/api/produtos', {
-        method: 'POST',
-        headers: {'Content-type': 'application/json'},
-        body: JSON.stringify(produto)
-    })
-    .then(response => response.json()) 
-    .then(json => console.log(json))
-    .catch(err => console.log(err));
+	const localStorageItem = localStorage.getItem(LOCALSTORAGE_KEY_LOGIN);
+	const parsedData = JSON.parse(localStorageItem);
+	const { token } = parsedData;
+	fetch(`${URL_API_LINK}/api/produtos`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			descricao: campoDescricao.value,
+			marca: campoMarca.value,
+			valor: converterBRLParaFloat(campoValor.value),
+		}),
+	})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error(`Erro de rede - ${response.status}`);
+			}
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data);
+			swal("Bom trabalho!", "Produto adicionado com sucesso!", "success");
+			definirConfiguracaoInicial();
+		})
+		.catch((error) => {
+			console.log(error);
+			swal("Oops!", "Erro ao adicionar produto.", "error");
+		});
 }
 
-function converterParaValorNumerico(valorString) {
-    const numeros = valorString.match(/\d+/g).join('');
-    return (numeros / 100) ?? 0
+function editarProduto(id) {
+	const localStorageItem = localStorage.getItem(LOCALSTORAGE_KEY_LOGIN);
+	const parsedData = JSON.parse(localStorageItem);
+	const { token } = parsedData;
+	fetch(`${URL_API_LINK}/api/produtos/` + id, {
+		method: "PUT",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${token}`,
+		},
+		body: JSON.stringify({
+			descricao: campoDescricao.value,
+			marca: campoMarca.value,
+			valor: converterBRLParaFloat(campoValor.value),
+		}),
+	})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error(`Erro de rede - ${response.status}`);
+			}
+			return response.json();
+		})
+		.then((data) => {
+			swal("Bom trabalho!", "Produto editado com sucesso!", "success");
+			definirConfiguracaoInicial();
+		})
+		.catch((error) => {
+			console.log(error);
+			swal("Oops!", "Erro ao editar produto.", "error");
+		});
 }
 
-function editarProduto() {
-
+function deletarProduto(id) {
+	const localStorageItem = localStorage.getItem(LOCALSTORAGE_KEY_LOGIN);
+	const parsedData = JSON.parse(localStorageItem);
+	const { token } = parsedData;
+	fetch(`${URL_API_LINK}/api/produtos/` + id, {
+		method: "DELETE",
+		headers: {
+			Authorization: `Bearer ${token}`,
+		},
+	})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error(`Erro de rede - ${response.status}`);
+			}
+			return response.json();
+		})
+		.then((data) => {
+			swal("Bom trabalho!", "Produto deletado com sucesso!", "success");
+			definirConfiguracaoInicial();
+		})
+		.catch((error) => {
+			console.log(error);
+			swal("Oops!", "Erro ao deletar produto.", "error");
+		});
 }
 
-function deletarProduto() {
-
+function converterBRLParaFloat(reais) {
+	const numeros = reais.replace(/\D/g, "");
+	return parseFloat(numeros) / 100;
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    configurarRadioButtons();
-    configurarFormularioParaCadastro();
-    mostrarProdutos(false);
-});
-
-campoValor.addEventListener('input', () => {
-    mascararCampoValor();
-});
-
-botaoFormulario.addEventListener('click', () => {
-    let opcaoSelecionada = null;
-
-    for (var i = 0; i < radioButtons.length; i++) {
-        if (radioButtons[i].checked) {
-            opcaoSelecionada = radioButtons[i].value;
-            break;
-        }
-    }
-
-    switch (opcaoSelecionada) {
-        case 'adicionar':
-            adicionarProduto();
-            break;
-        case 'editar':
-            editarProduto();
-            break;
-        case 'deletar':
-            deletarProduto();
-            break;
-    }
-});
-
-botaoListarProdutos.addEventListener('click', () => {
-    const deveMostrarProdutos = secaoListaProdutos.style.display === 'none';
-
-    if (deveMostrarProdutos) {
-        carregarProdutosPara(preencherTabela);
-        mostrarProdutos(true);
-    } else {
-        mostrarProdutos(false);
-    }
-});
